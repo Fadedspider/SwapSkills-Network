@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SkillSwap Networks - Sign Up</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #ffffff;
+      color: #2c3e50;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    .login-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex: 1;
+    }
+    .login-card {
+      width: 400px;
+      padding: 32px;
+      box-shadow: 0 0 16px rgba(0, 0, 0, 0.1);
+      border-radius: 12px;
+      background: #fff;
+    }
+    .login-header h1 {
+      margin-bottom: 0;
+    }
+    .form-group {
+      margin-top: 20px;
+    }
+    .form-label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+    .form-input {
+      width: 100%;
+      padding: 10px 14px;
+      font-size: 16px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+    .login-btn {
+      margin-top: 24px;
+      width: 100%;
+      padding: 12px;
+      font-weight: 600;
+      font-size: 16px;
+      background: #3a86ff;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    .login-btn:hover {
+      background: #2968d9;
+    }
+    .error-message {
+      color: #d90429;
+      margin-top: 6px;
+      font-size: 14px;
+      display: none;
+    }
+    .success-message {
+      color: green;
+      margin-top: 16px;
+      font-size: 14px;
+      display: none;
+    }
+    .loading-spinner {
+      display: none;
+      margin-right: 6px;
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <a href="profile.html" class="logo">SkillSwap Networks</a>
+    <div class="nav-buttons">
+      <a href="login.html" class="nav-btn">Login</a>
+    </div>
+  </nav>
+
+  <div class="login-container">
+    <div class="login-card">
+      <div class="login-header">
+        <h1>Create Account</h1>
+        <p>Join SkillSwap Networks and start connecting</p>
+      </div>
+
+      <form class="login-form" id="signupForm">
+        <div class="form-group">
+          <label for="name" class="form-label">Full Name</label>
+          <input type="text" id="name" class="form-input" placeholder="Enter your full name" required />
+        </div>
+
+        <div class="form-group">
+          <label for="email" class="form-label">Email address</label>
+          <input type="email" id="email" class="form-input" placeholder="Enter your email" required />
+          <div class="error-message" id="emailError"></div>
+        </div>
+
+        <div class="form-group">
+          <label for="password" class="form-label">Password</label>
+          <input type="password" id="password" class="form-input" placeholder="Create a password" required />
+          <div class="error-message" id="passwordError"></div>
+        </div>
+
+        <button type="submit" class="login-btn" id="signupBtn">
+          <span class="loading-spinner" id="loadingSpinner">⏳</span>
+          <span id="signupBtnText">Sign up</span>
+        </button>
+
+        <div class="success-message" id="successMessage"></div>
+        <div class="error-message" id="generalError"></div>
+      </form>
+    </div>
+  </div>
+
+  <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+
+    const supabase = createClient(
+      'https://vaqytztdyddmjurvdcnr.supabase.co',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZhcXl0enRkeWRkbWp1cnZkY25yIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTIyOTcxMjMsImV4cCI6MjA2Nzg3MzEyM30.HulF-xChijgYKXMqDhWTiDrHhIWLpBbDLIJGO7tX29M'
+    );
+
+    const signupForm = document.getElementById('signupForm');
+    const signupBtn = document.getElementById('signupBtn');
+    const loadingSpinner = document.getElementById('loadingSpinner');
+    const signupBtnText = document.getElementById('signupBtnText');
+
+    function showError(id, message) {
+      const el = document.getElementById(id);
+      el.textContent = message;
+      el.style.display = 'block';
+    }
+
+    function hideError(id) {
+      document.getElementById(id).style.display = 'none';
+    }
+
+    function showSuccess(msg) {
+      const el = document.getElementById('successMessage');
+      el.textContent = msg;
+      el.style.display = 'block';
+    }
+
+    signupForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      hideError('emailError');
+      hideError('passwordError');
+      hideError('generalError');
+
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value.trim();
+      const name = document.getElementById('name').value.trim();
+
+      if (!email.includes('@')) {
+        showError('emailError', 'Invalid email');
+        return;
+      }
+      if (password.length < 6) {
+        showError('passwordError', 'Password must be at least 6 characters');
+        return;
+      }
+
+      signupBtn.disabled = true;
+      loadingSpinner.style.display = 'inline-block';
+      signupBtnText.textContent = 'Signing up...';
+
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            full_name: name
+          }
+        }
+      });
+
+      if (error) {
+        showError('generalError', error.message);
+        signupBtn.disabled = false;
+        loadingSpinner.style.display = 'none';
+        signupBtnText.textContent = 'Sign up';
+        return;
+      }
+
+      // Wait for session & user creation
+      const user = data.user;
+      if (user) {
+        // Insert profile in DB
+        await supabase.from('profiles').upsert([{
+          id: user.id,
+          full_name: name,
+          avatar_url: 'avatar.png',
+          skills_offered: [],
+          skills_wanted: [],
+          location: '',
+          availability: 'weekends',
+          profile_status: 'public'
+        }]);
+      }
+
+      // ✅ Redirect to profile page
+      window.location.href = 'profile.html';
+    });
+  </script>
+</body>
+</html>

@@ -1,610 +1,164 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Profile | SwapSkills Network</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <!-- Inter for UI, Dancing Script for logo -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Profile | SkillSwap</title>
   <style>
-    :root {
-      --primary: #3a86ff;
-      --accent: #219150;
-      --danger: #d90429;
-      --sidebar-bg: linear-gradient(135deg, #e0eaff 0%, #f5f7fa 100%);
-      --main-bg: #f9fafb;
-      --card-bg: #fff;
-      --border: #e5e7eb;
-      --text-main: #22223b;
-      --text-muted: #6c757d;
-      --shadow: 0 6px 32px rgba(60,72,88,0.10);
-      --radius: 18px;
-      --font-main: 'Inter', Arial, sans-serif;
-      --font-logo: 'Dancing Script', cursive;
-    }
-    html, body {
-      height: 100%;
-      margin: 0;
-      padding: 0;
-      font-family: var(--font-main);
-      background: var(--main-bg);
-      color: var(--text-main);
-      min-height: 100vh;
-    }
-    body {
-      display: flex;
-      min-height: 100vh;
-    }
-    .sidebar {
-      width: 260px;
-      background: var(--sidebar-bg);
-      border-right: 1.5px solid var(--border);
-      padding: 32px 0 0 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      height: 100vh;
-      position: sticky;
-      top: 0;
-      z-index: 10;
-      transition: width 0.2s;
-    }
-    .sidebar .logo {
-      font-family: var(--font-logo);
-      font-size: 2.4rem;
-      font-weight: 700;
-      color: var(--primary);
-      margin-bottom: 40px;
-      letter-spacing: 0.04em;
-      text-shadow: 0 2px 8px rgba(58,134,255,0.07);
-      user-select: none;
-      cursor: pointer;
-      transition: color 0.2s;
-    }
-    .sidebar .logo:hover {
-      color: #5d9dd5;
-    }
-    .sidebar-nav {
-      width: 100%;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      align-items: flex-start;
-      padding-left: 36px;
-    }
-    .sidebar-nav a {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      padding: 12px 22px;
-      border-radius: 16px;
-      color: var(--text-main);
-      text-decoration: none;
-      font-size: 1.13em;
-      font-weight: 500;
-      transition: background 0.18s, color 0.18s, box-shadow 0.18s, transform 0.12s;
-      position: relative;
-    }
-    .sidebar-nav a.active,
-    .sidebar-nav a:hover,
-    .sidebar-nav a:focus {
-      background: var(--primary);
-      color: #fff;
-      box-shadow: 0 4px 14px rgba(58,134,255,0.12);
-      transform: scale(1.04);
-      border-radius: 16px;
-      outline: none;
-    }
-    .sidebar-nav a .icon {
-      font-size: 1.32em;
-      transition: color 0.18s;
-    }
-    .sidebar-nav a.active .icon,
-    .sidebar-nav a:hover .icon {
-      color: #fff;
-    }
-    .sidebar .logout-btn {
-      margin-top: auto;
-      margin-bottom: 32px;
-      padding: 12px 32px;
-      background: var(--danger);
-      color: #fff;
-      border: none;
-      border-radius: 12px;
-      font-size: 1.08em;
-      cursor: pointer;
-      font-weight: 600;
-      transition: background 0.2s, box-shadow 0.2s;
-      box-shadow: 0 2px 8px rgba(217,4,41,0.10);
-    }
-    .sidebar .logout-btn:hover,
-    .sidebar .logout-btn:focus {
-      background: #a1001d;
-      outline: none;
-    }
-    .main-content {
-      flex: 1;
-      min-width: 0;
-      display: flex;
-      flex-direction: column;
-      height: 100vh;
-      background: linear-gradient(120deg, #f7fafc 0%, #f3f4f6 100%);
-      animation: fadeIn 1s;
-    }
-    .header-bar {
-      height: 72px;
-      background: var(--card-bg);
-      border-bottom: 1.5px solid var(--border);
-      display: flex;
-      align-items: center;
-      justify-content: flex-end;
-      padding: 0 42px;
-      box-shadow: 0 2px 8px rgba(60,72,88,0.04);
-      z-index: 2;
-      position: sticky;
-      top: 0;
-    }
-    .header-bar .save-btn,
-    .header-bar .discard-btn {
-      margin-left: 18px;
-      padding: 12px 28px;
-      border-radius: 9px;
-      border: none;
-      font-size: 1.13em;
-      font-weight: 700;
-      cursor: pointer;
-      transition: background 0.2s, color 0.2s, box-shadow 0.2s;
-      letter-spacing: 0.03em;
-      box-shadow: 0 2px 8px rgba(60,72,88,0.06);
-    }
-    .header-bar .save-btn {
-      background: #e6f4ea;
-      color: var(--accent);
-      border: 1px solid #b8eac7;
-    }
-    .header-bar .save-btn:hover,
-    .header-bar .save-btn:focus {
-      background: #b8eac7;
-      color: #17613a;
-      outline: none;
-    }
-    .header-bar .discard-btn {
-      background: #fbeaea;
-      color: var(--danger);
-      border: 1px solid #f8bcbc;
-    }
-    .header-bar .discard-btn:hover,
-    .header-bar .discard-btn:focus {
-      background: #f8bcbc;
-      color: #a1001d;
-      outline: none;
-    }
-    .profile-section {
-      flex: 1;
-      display: flex;
-      justify-content: center;
-      align-items: flex-start;
-      overflow-y: auto;
-      padding: 48px 0;
-    }
-    .profile-card {
-      background: var(--card-bg);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      border: 1.5px solid var(--border);
-      padding: 48px 64px;
-      max-width: 900px;
-      width: 100%;
-      display: grid;
-      grid-template-columns: 260px 1fr;
-      gap: 56px;
-      align-items: flex-start;
-      animation: fadeIn 0.7s;
-    }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(40px);}
-      to   { opacity: 1; transform: none;}
-    }
-    .profile-photo-section {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 18px;
-    }
-    .profile-avatar {
-      width: 120px;
-      height: 120px;
-      border-radius: 50%;
-      background: #e0e0e0;
-      object-fit: cover;
-      border: 3px solid #b3d4fc;
-      box-shadow: 0 2px 8px rgba(60,72,88,0.09);
-      margin-bottom: 8px;
-      transition: box-shadow 0.2s;
-    }
-    .profile-photo-section button {
-      background: none;
-      border: none;
-      color: var(--primary);
-      cursor: pointer;
-      font-size: 1em;
-      margin: 0 2px;
-      transition: color 0.2s, background 0.2s;
-      font-weight: 500;
-      padding: 2px 10px;
-      border-radius: 7px;
-    }
-    .profile-photo-section button:hover,
-    .profile-photo-section button:focus {
-      background: #e7f0fe;
-      color: #1557b8;
-      outline: none;
-    }
-    .profile-photo-section button.remove {
-      color: var(--danger);
-    }
-    .profile-fields {
-      display: flex;
-      flex-direction: column;
-      gap: 30px;
-    }
-    .profile-row {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-    .profile-label {
-      font-size: 1.18rem;
-      color: var(--text-muted);
-      font-weight: 600;
-      letter-spacing: 0.01em;
-      margin-bottom: 2px;
-    }
-    .profile-input, .profile-select {
-      width: 100%;
-      padding: 16px 18px;
-      background: #f6fafd;
-      color: var(--text-main);
-      border: 1.5px solid var(--border);
-      border-radius: 8px;
-      font-size: 1.09rem;
-      outline: none;
-      margin-bottom: 2px;
-      font-family: inherit;
-      transition: border 0.2s, background 0.2s, box-shadow 0.2s;
-      box-sizing: border-box;
-    }
-    .profile-input:focus, .profile-select:focus {
-      border-color: var(--primary);
-      background: #fff;
-      box-shadow: 0 0 0 2px #b3d4fc;
-    }
-    .skills-list {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-      margin-top: 8px;
-      min-height: 36px;
-    }
-    .skill-tag {
-      background: #e7f0fe;
-      color: var(--primary);
-      border-radius: 18px;
-      padding: 8px 18px;
-      font-size: 1.05em;
-      display: flex;
-      align-items: center;
-      gap: 7px;
-      border: 1px solid #b3d4fc;
-      font-weight: 500;
-      transition: background 0.2s, box-shadow 0.2s, transform 0.16s;
-      box-shadow: 0 1px 4px rgba(60,72,88,0.04);
-      cursor: pointer;
-      position: relative;
-      animation: tagIn 0.3s;
-    }
-    .skill-tag:active {
-      transform: scale(0.96);
-    }
-    @keyframes tagIn {
-      from { opacity: 0; transform: scale(0.8);}
-      to   { opacity: 1; transform: scale(1);}
-    }
-    .skill-tag .remove-skill {
-      background: none;
-      border: none;
-      color: var(--danger);
-      font-size: 1.12em;
-      cursor: pointer;
-      margin-left: 2px;
-      transition: color 0.2s, background 0.2s;
-      border-radius: 50%;
-      padding: 0 6px;
-    }
-    .skill-tag .remove-skill:hover,
-    .skill-tag .remove-skill:focus {
-      color: #a1001d;
-      background: #fbeaea;
-      outline: none;
-    }
-    .add-skill-input {
-      background: #fff;
-      border: 1.5px solid var(--border);
-      color: var(--text-main);
-      border-radius: 8px;
-      margin-left: 4px;
-      width: 140px;
-      font-size: 1.05em;
-      outline: none;
-      padding: 9px 12px;
-      margin-top: 8px;
-      transition: border 0.2s;
-    }
-    .add-skill-input:focus {
-      border-color: var(--primary);
-      background: #e7f0fe;
-    }
-    @media (max-width: 1200px) {
-      .profile-card { padding: 32px 4vw; gap: 28px; }
-    }
-    @media (max-width: 900px) {
-      .sidebar { width: 70px; }
-      .sidebar .logo, .sidebar-nav a span.label { display: none; }
-      .sidebar-nav a { justify-content: center; }
-      .profile-card { grid-template-columns: 1fr; }
-    }
-    @media (max-width: 700px) {
-      .profile-section { padding: 12px 0; }
-      .profile-card { padding: 10px 2vw; }
-      .header-bar { padding: 0 8px; }
-    }
-    @media (max-width: 500px) {
-      .sidebar { display: none; }
-      .main-content { width: 100vw; }
-    }
-    /* Toast styles */
-    .toast {
-      position: fixed;
-      bottom: 32px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: #22223b;
-      color: #fff;
-      padding: 16px 36px;
-      border-radius: 12px;
-      font-size: 1.05em;
-      font-family: var(--font-main);
-      box-shadow: 0 2px 12px rgba(60,72,88,0.20);
-      opacity: 0;
-      pointer-events: none;
-      z-index: 9999;
-      transition: opacity 0.4s;
-    }
-    .toast.show {
-      opacity: 1;
-      pointer-events: auto;
-    }
+    body { font-family: sans-serif; padding: 20px; }
+    input, select { display: block; margin: 10px 0; padding: 8px; width: 300px; }
+    .skill-tag { display: inline-block; margin: 4px; padding: 6px; background: #eee; border-radius: 4px; }
+    .remove-skill { margin-left: 6px; cursor: pointer; }
+    #toast { background: #333; color: white; padding: 10px; position: fixed; bottom: 10px; left: 10px; display: none; }
   </style>
 </head>
 <body>
-  <nav class="sidebar">
-    <div class="logo">SwapSkills</div>
-    <div class="sidebar-nav">
-      <a href="profile.html" class="active"><span class="icon">👤</span><span class="label">Profile</span></a>
-      <a href="swap.html"><span class="icon">🔄</span><span class="label">Swaps</span></a>
-      <a href="index.html"><span class="icon">🏠</span><span class="label">Home</span></a>
-    </div>
-    <button class="logout-btn" onclick="logout()">Logout</button>
-  </nav>
-  <div class="main-content">
-    <div class="header-bar">
-      <button class="save-btn" onclick="saveProfile()">Save</button>
-      <button class="discard-btn" onclick="discardChanges()">Discard</button>
-    </div>
-    <section class="profile-section">
-      <div class="profile-card">
-        <div class="profile-photo-section">
-          <img src="avatar.png" alt="Profile Photo" class="profile-avatar" id="profilePhoto">
-          <div>
-            <button onclick="editPhoto()">Add/Edit</button>
-            <button class="remove" onclick="removePhoto()">Remove</button>
-          </div>
-        </div>
-        <form class="profile-fields" autocomplete="off" onsubmit="event.preventDefault(); saveProfile();">
-          <div class="profile-row">
-            <label class="profile-label" for="name">Name</label>
-            <input class="profile-input" id="name" placeholder="Your name" required>
-          </div>
-          <div class="profile-row">
-            <label class="profile-label" for="location">Location</label>
-            <input class="profile-input" id="location" placeholder="City, Country">
-          </div>
-          <div class="profile-row">
-            <label class="profile-label">Skills Offered</label>
-            <div class="skills-list" id="skillsOffered"></div>
-            <input class="add-skill-input" id="addSkillOffered" placeholder="Add skill" onkeydown="addSkill(event, 'offered')" aria-label="Add skill offered">
-          </div>
-          <div class="profile-row">
-            <label class="profile-label">Availability</label>
-            <select class="profile-select" id="availability">
-              <option value="weekends">Weekends</option>
-              <option value="evenings">Evenings</option>
-              <option value="mornings">Mornings</option>
-              <option value="fulltime">Full Time</option>
-              <option value="parttime">Part Time</option>
-              <option value="flexible">Flexible</option>
-              <option value="remotework">Remote Only</option>
-              <option value="onsite">On-site Only</option>
-            </select>
-          </div>
-          <div class="profile-row">
-            <label class="profile-label" for="profileStatus">Profile</label>
-            <select class="profile-select" id="profileStatus">
-              <option value="public">Public</option>
-              <option value="private">Private</option>
-            </select>
-          </div>
-          <div class="profile-row">
-            <label class="profile-label">Skills Wanted</label>
-            <div class="skills-list" id="skillsWanted"></div>
-            <input class="add-skill-input" id="addSkillWanted" placeholder="Add skill" onkeydown="addSkill(event, 'wanted')" aria-label="Add skill wanted">
-          </div>
-        </form>
-      </div>
-    </section>
-  </div>
-  <input type="file" id="photoInput" style="display:none" accept="image/*" onchange="uploadPhoto(event)">
-  <div class="toast" id="toast"></div>
-  <script>
-  const token = localStorage.getItem('authToken');
 
-  if (!token) {
-    alert("Not logged in!");
-    window.location.href = "login.html";
-  }
+<h1>My Profile</h1>
+<input type="text" id="name" placeholder="Full Name" />
+<input type="text" id="location" placeholder="Location" />
+<input type="text" id="addSkillOffered" placeholder="Skill Offered (press Enter)" onkeydown="addSkill(event, 'offered')" />
+<div id="skillsOffered"></div>
 
+<input type="text" id="addSkillWanted" placeholder="Skill Wanted (press Enter)" onkeydown="addSkill(event, 'wanted')" />
+<div id="skillsWanted"></div>
+
+<select id="availability">
+  <option value="weekends">Weekends</option>
+  <option value="weekdays">Weekdays</option>
+</select>
+
+<select id="profileStatus">
+  <option value="public">Public</option>
+  <option value="private">Private</option>
+</select>
+
+<button onclick="saveProfile()">Save Profile</button>
+<button onclick="logout()">Logout</button>
+
+<div id="toast"></div>
+
+<script type="module">
+  import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+
+  const supabase = createClient(
+    'https://vaqytztdyddmjurvdcnr.supabase.co',
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZhcXl0enRkeWRkbWp1cnZkY25yIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTIyOTcxMjMsImV4cCI6MjA2Nzg3MzEyM30.HulF-xChijgYKXMqDhWTiDrHhIWLpBbDLIJGO7tX29M'
+  );
+
+  let userId = null;
   let profile = {
     name: "",
     location: "",
-    profile_photo_url: "avatar.png",
-    skills_offered: [],
-    skills_wanted: [],
+    skillsOffered: [],
+    skillsWanted: [],
     availability: "weekends",
-    is_public: true
+    profileStatus: "public"
   };
 
-  async function getProfile() {
-    const res = await fetch("http://localhost:8000/profile/me", {
-      headers: { Authorization: `Bearer ${token}` }
-    });
-
-    if (!res.ok) {
-      alert("Error fetching profile. Please login again.");
-      localStorage.removeItem("authToken");
-      window.location.href = "login.html";
+  async function getUserAndProfile() {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      showToast("You must be logged in.");
       return;
     }
+    userId = user.id;
 
-    const data = await res.json();
-    profile = {
-      name: data.name || "",
-      location: data.location || "",
-      profile_photo_url: data.profile_photo_url || "avatar.png",
-      skills_offered: data.skills_offered || [],
-      skills_wanted: data.skills_wanted || [],
-      availability: data.availability || "weekends",
-      is_public: data.is_public
-    };
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', userId)
+      .single();
+
+    if (data) {
+      profile = {
+        name: data.full_name || "",
+        location: data.location || "",
+        skillsOffered: data.skills_offered || [],
+        skillsWanted: data.skills_wanted || [],
+        availability: data.availability || "weekends",
+        profileStatus: data.profile_status || "public"
+      };
+    }
+
     renderProfile();
   }
 
   function renderProfile() {
     document.getElementById('name').value = profile.name;
     document.getElementById('location').value = profile.location;
-    document.getElementById('profilePhoto').src = profile.profile_photo_url;
     document.getElementById('availability').value = profile.availability;
-    document.getElementById('profileStatus').value = profile.is_public ? "public" : "private";
-    renderSkills("skillsOffered", profile.skills_offered, "offered");
-    renderSkills("skillsWanted", profile.skills_wanted, "wanted");
+    document.getElementById('profileStatus').value = profile.profileStatus;
+    renderSkills('skillsOffered', profile.skillsOffered, 'offered');
+    renderSkills('skillsWanted', profile.skillsWanted, 'wanted');
   }
 
   function renderSkills(containerId, skills, type) {
     const container = document.getElementById(containerId);
     container.innerHTML = '';
     skills.forEach((skill, idx) => {
-      const tag = document.createElement("div");
-      tag.className = "skill-tag";
-      tag.innerHTML = `
-        <span>${skill}</span>
-        <button class="remove-skill" onclick="removeSkill('${type}', ${idx})">&times;</button>
-      `;
+      const tag = document.createElement('div');
+      tag.className = 'skill-tag';
+      tag.innerHTML = `${skill} <span class="remove-skill" onclick="removeSkill('${type}', ${idx})">&times;</span>`;
       container.appendChild(tag);
     });
   }
 
-  function addSkill(e, type) {
+  window.addSkill = function (e, type) {
     if (e.key === "Enter") {
       e.preventDefault();
-      const inputId = type === "offered" ? "addSkillOffered" : "addSkillWanted";
-      const value = document.getElementById(inputId).value.trim();
-      if (!value) return;
-      if (type === "offered") profile.skills_offered.push(value);
-      else profile.skills_wanted.push(value);
-      document.getElementById(inputId).value = "";
-      renderProfile();
+      const inputId = type === 'offered' ? 'addSkillOffered' : 'addSkillWanted';
+      const skill = document.getElementById(inputId).value.trim();
+      if (skill) {
+        if (type === 'offered') profile.skillsOffered.push(skill);
+        else profile.skillsWanted.push(skill);
+        document.getElementById(inputId).value = '';
+        renderProfile();
+      }
     }
   }
 
-  function removeSkill(type, idx) {
-    if (type === "offered") profile.skills_offered.splice(idx, 1);
-    else profile.skills_wanted.splice(idx, 1);
+  window.removeSkill = function (type, idx) {
+    if (type === 'offered') profile.skillsOffered.splice(idx, 1);
+    else profile.skillsWanted.splice(idx, 1);
     renderProfile();
   }
 
-  function editPhoto() {
-    document.getElementById("photoInput").click();
-  }
-
-  function uploadPhoto(event) {
-    const file = event.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = e => {
-      profile.profile_photo_url = e.target.result;
-      renderProfile();
-    };
-    reader.readAsDataURL(file);
-  }
-
-  function removePhoto() {
-    profile.profile_photo_url = "avatar.png";
-    renderProfile();
-  }
-
-  async function saveProfile() {
-    profile.name = document.getElementById('name').value.trim();
-    profile.location = document.getElementById('location').value.trim();
+  window.saveProfile = async function () {
+    profile.name = document.getElementById('name').value;
+    profile.location = document.getElementById('location').value;
     profile.availability = document.getElementById('availability').value;
-    profile.is_public = document.getElementById('profileStatus').value === "public";
+    profile.profileStatus = document.getElementById('profileStatus').value;
 
-    const res = await fetch("http://localhost:8000/profile", {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${token}`
-      },
-      body: JSON.stringify(profile)
-    });
+    const { error } = await supabase
+      .from('profiles')
+      .upsert([{
+        id: userId,
+        full_name: profile.name,
+        location: profile.location,
+        skills_offered: profile.skillsOffered,
+        skills_wanted: profile.skillsWanted,
+        availability: profile.availability,
+        profile_status: profile.profileStatus
+      }]);
 
-    if (res.ok) {
-      showToast("Profile saved!");
-    } else {
-      const error = await res.json();
-      showToast("Error: " + (error.detail || "Unable to save"));
-    }
+    if (error) showToast("Save failed");
+    else showToast("Profile saved!");
   }
 
-  function discardChanges() {
-    renderProfile();
-    showToast("Changes discarded.");
-  }
-
-  function logout() {
-    localStorage.removeItem("authToken");
+  window.logout = async function () {
+    await supabase.auth.signOut();
     window.location.href = "login.html";
   }
 
-  function showToast(message) {
-    const toast = document.getElementById("toast");
-    toast.textContent = message;
-    toast.classList.add("show");
-    setTimeout(() => toast.classList.remove("show"), 2000);
+  function showToast(msg) {
+    const toast = document.getElementById('toast');
+    toast.textContent = msg;
+    toast.style.display = 'block';
+    setTimeout(() => toast.style.display = 'none', 2000);
   }
 
-  // === Init ===
-  getProfile();
+  getUserAndProfile();
 </script>
-
 </body>
 </html>
