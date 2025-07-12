@@ -1,4 +1,4 @@
-from db import SessionLocal
+from config.db import SessionLocal
 from models import User
 from utils import get_password_hash
 

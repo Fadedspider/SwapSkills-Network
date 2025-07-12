@@ -1,5 +1,5 @@
 from models import Base
-from db import engine
+from config.db import engine
 
 # This creates all tables defined by Base subclasses (i.e., User)
 print("Creating tables...")

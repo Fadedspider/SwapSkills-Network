@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
 
 # Input format for login
 class UserLogin(BaseModel):
@@ -9,3 +9,8 @@ class UserLogin(BaseModel):
 class Token(BaseModel):
     access_token: str
     token_type: str
+
+# Input format for registration
+class UserRegister(BaseModel):
+    email: EmailStr
+    password: str
