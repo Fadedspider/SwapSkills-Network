@@ -595,7 +595,6 @@
             
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
-            const rememberMe = document.getElementById('rememberMe').checked;
             
             let isValid = true;
             
@@ -631,8 +630,7 @@
                     },
                     body: JSON.stringify({
                         email: email,
-                        password: password,
-                        rememberMe: rememberMe
+                        password: password
                     })
                 });
                 
@@ -649,7 +647,7 @@
                     
                     // Redirect after short delay
                     setTimeout(() => {
-                        window.location.href = 'index.html';
+                        window.location.href = 'profile.html';
                     }, 1500);
                     
                 } else {
@@ -663,7 +661,7 @@
                 // For demo purposes, simulate successful login
                 showSuccess('Login successful! Redirecting...');
                 setTimeout(() => {
-                    window.location.href = 'index.html';
+                    window.location.href = 'profile.html';
                 }, 1500);
                 
                 // Uncomment the line below for actual error handling
@@ -750,7 +748,7 @@
                 setTimeout(() => {
                     showSuccess('Google login successful! Redirecting...');
                     setTimeout(() => {
-                        window.location.href = 'index.html';
+                        window.location.href = 'profile.html';
                     }, 1500);
                 }, 1000);
                 

@@ -14,3 +14,22 @@ class Token(BaseModel):
 class UserRegister(BaseModel):
     email: EmailStr
     password: str
+
+class UserProfileOut(BaseModel):
+    id: int
+    email: str
+    name: str | None = None
+    location: str | None = None
+    availability: str | None = None
+    is_public: bool | None = True
+    profile_photo_url: str | None = None
+
+    class Config:
+        orm_mode = True
+
+class UserProfileUpdate(BaseModel):
+    name: str | None = None
+    location: str | None = None
+    availability: str | None = None
+    is_public: bool | None = True
+    profile_photo_url: str | None = None

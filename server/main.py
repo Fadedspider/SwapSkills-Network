@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from server.routes.auth import auth_router
 from fastapi.middleware.cors import CORSMiddleware
+from server.routes.profile import profile_router
 
 app = FastAPI()
 
@@ -15,3 +16,6 @@ app.add_middleware(
 
 
 app.include_router(auth_router, prefix="/auth")
+
+app.include_router(profile_router)
+
